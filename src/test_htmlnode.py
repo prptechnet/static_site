@@ -1,35 +1,57 @@
 import unittest
 
-from htmlnode import HTMLNode
+from htmlnode import HTMLNode, LeafNode
 
 
 class TestHTMLNode(unittest.TestCase):
-    def test_eq(self):
-        node = TextNode("This is a text node", TextType.BOLD)
-        node2 = TextNode("This is a text node", TextType.BOLD)
-        self.assertEqual(node, node2)
-
-
-    def test_not_eq(self):
-        node = TextNode("This is a text node", TextType.BOLD)
-        node2 = TextNode("This is a text node", TextType.ITALIC)
+    def test_props_not_eq(self):
+        test_props = {"href": "https://www.google.com", "target": "_blank"}
+        node = HTMLNode(value="This is a text node", props=test_props)
+        node2 = HTMLNode(value="This is a text node")
         self.assertNotEqual(node, node2)
 
-    def test_url_eq(self):
-        node = TextNode("This is a text node", TextType.BOLD, url=None)
-        node2 = TextNode("This is a text node", TextType.BOLD, url=None)
-        self.assertEqual(node, node2)
+    def test_props_to_html_eq(self):
+        test_props = {"href": "https://www.google.com", "target": "_blank"}
+        node = HTMLNode(value="This is a text node", props=test_props)
+        self.assertEqual(' href="https://www.google.com" target="_blank"', node.props_to_html())
 
+    def test_props_to_html_not_eq(self):
+        test_props = {"href": "https://www.bing.com", "target": "_blank"}
+        node = HTMLNode(value="This is a text node", props=test_props)
+        self.assertNotEqual(' href="https://www.google.com" target="_blank"', node.props_to_html())
 
-    def test_url_not_eq(self):
-        node = TextNode("This is a text node", TextType.ITALIC, url= "https://www.boot.dev")
-        node2 = TextNode("This is a text node", TextType.ITALIC)
-        self.assertNotEqual(node, node2)
+class TestLeafNode(unittest.TestCase):
+    def test_leaf_to_html_p(self):
+        node = LeafNode("p", "Hello, world!")
+        self.assertEqual(node.to_html(), "<p>Hello, world!</p>")
 
-    def test_empty_url_not_eq(self):
-        node = TextNode("This is a text node", TextType.ITALIC, url=None)
-        node2 = TextNode("This is a text node", TextType.ITALIC, url="")
-        self.assertNotEqual(node, node2)
+    def test_leaf_to_html_not_p(self):
+        node = LeafNode("p", "Hello, world!")
+        self.assertNotEqual(node.to_html(), "<h1>Hello, world!</h1>")
+
+    def test_leaf_to_html_title(self):
+        node = LeafNode("title", "Hello, world!")
+        self.assertEqual(node.to_html(), "<title>Hello, world!</title>")
+
+    def test_leaf_to_html_not_title(self):
+        node = LeafNode("title", "Hello, world!")
+        self.assertNotEqual(node.to_html(), "<p>Hello, world!</p>")
+
+    def test_leaf_to_html_h1(self):
+        node = LeafNode("h1", "Hello, world!")
+        self.assertEqual(node.to_html(), "<h1>Hello, world!</h1>")
+
+    def test_leaf_to_html_not_h1(self):
+        node = LeafNode("h1", "Hello, world!")
+        self.assertNotEqual(node.to_html(), "<p>Hello, world!</p>")
+
+    def test_leaf_to_html_a(self):
+        node = LeafNode("a", "Click me!", {"href": "https://www.google.com"})
+        self.assertEqual(node.to_html(), '<a href="https://www.google.com">Click me!</a>')
+
+    def test_leaf_to_html_not_a(self):
+        node = LeafNode("a", "Click me!", {"href": "https://www.google.com"})
+        self.assertNotEqual(node.to_html(), "<a>Click me!</a>")
 
 if __name__ == "__main__":
     unittest.main()

@@ -31,5 +31,10 @@ class TestTextNode(unittest.TestCase):
         node2 = TextNode("This is a text node", TextType.ITALIC, url="")
         self.assertNotEqual(node, node2)
 
+    def test_empty_url_not_eq(self):
+        node = TextNode("This is a text node", TextType.ITALIC, url=None)
+        node2 = TextNode("This is a text node", TextType.ITALIC, url="")
+        self.assertNotEqual(node, node2)
+
 if __name__ == "__main__":
     unittest.main()
